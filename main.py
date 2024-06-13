@@ -9,16 +9,21 @@ st.set_page_config(
     menu_items=None,
 )
 
+mno = st.text_input("Provider: ")
+
+
+st.write("Provider: " + mno)
+
 
 def update():
     try:
         st.session_state.summary = {}
         st.session_state.new_template, st.session_state.new_tech = update_template(
-            st.session_state.df_tech, st.session_state.df_template, customer_id
+            st.session_state.df_tech, st.session_state.df_template, customer_id, mno
         )
 
         st.session_state.df_template, st.session_state.df_tech = update_template(
-            st.session_state.df_tech, st.session_state.df_template, customer_id
+            st.session_state.df_tech, st.session_state.df_template, customer_id, mno
         )
         st.session_state.bill = True
     # except KeyError:
@@ -50,6 +55,9 @@ try:
             tech_file,
             sheet_name=tech_team_sheet_name,
         )
+        st.session_state.df_tech["Subscriber ID #"] = st.session_state.df_tech[
+            "Subscriber ID #"
+        ].astype(str)
         st.session_state.df_template = pd.read_excel(
             temp_file, sheet_name=template_sheet_name
         )

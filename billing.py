@@ -2,8 +2,23 @@ import pandas as pd
 import datetime
 import re
 
+num_to_month = month = {
+    "01": "Janauary",
+    "02": "February",
+    "03": "March",
+    "04": "April",
+    "05": "May",
+    "06": "June",
+    "07": "July",
+    "08": "August",
+    "09": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December",
+}
 
-def check_billable_sim(data):
+
+def check_billable_sim_ukj(data):
     # Check for activation
     if data["Status"].lower() == "active":
         data["Billing Status"] = "Billable"
@@ -17,7 +32,29 @@ def check_billable_sim(data):
                 == pd.to_datetime(data["Suspension Date (UTC)"]).strftime("%Y")
             ):
                 data["Billing Status"] = "Billable"
-                data["Status"] = "active"
+                data["Status"] = "Active"
+            else:
+                data["Billing Status"] = "Not Billable"
+        else:
+            data["Billing Status"] = "Not Billable"
+    else:
+        data["Billing Status"] = "Please Manually Confirm Billing"
+
+    return data
+
+
+def check_billable_sim_ono(data):
+    # Check for activation
+    if data["Status"].lower() == "active":
+        data["Billing Status"] = "Billable"
+    elif data["Status"].lower() == "inactive" or data["Status"].lower() == "suspended":
+        if type(data["Suspension Date (UTC)"]) != pd._libs.tslibs.nattype.NaTType:
+            if (
+                num_to_month[datetime.datetime.now().strftime("%m")]
+                == data["Suspension Date (UTC)"]
+            ):
+                data["Billing Status"] = "Billable"
+                data["Status"] = "Active"
             else:
                 data["Billing Status"] = "Not Billable"
         else:
@@ -37,10 +74,13 @@ def change_status(data, iccid, new_value, name, activation_date, customer_id):
     return data
 
 
-def update_template(df_data, df_temp, customer_id):
-    df_data = df_data.apply(check_billable_sim, axis=1)
+def update_template(df_data, df_temp, customer_id, mno):
+    if mno.lower() == "ukj":
+        df_data = df_data.apply(check_billable_sim_ukj, axis=1)
+    elif mno.lower() == "onomondo":
+        df_data = df_data.apply(check_billable_sim_ono, axis=1)
     df_data["Subscriber ID #"] = df_data["Subscriber ID #"].apply(
-        lambda data: re.sub("'", "", data)
+        lambda data: re.sub("'", "", f"{data}")
     )
     df_temp["ICCID"] = df_temp["ICCID"].apply(lambda data: re.sub("'", "", data))
     for index, data in df_data.iterrows():
