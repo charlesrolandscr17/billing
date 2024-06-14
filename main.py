@@ -54,6 +54,9 @@ try:
         st.session_state.df_tech = pd.read_excel(
             tech_file,
             sheet_name=tech_team_sheet_name,
+            dtype={
+                "Subscriber ID #": str,
+            },
         )
         st.session_state.df_tech["Subscriber ID #"] = st.session_state.df_tech[
             "Subscriber ID #"
