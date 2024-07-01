@@ -11,8 +11,15 @@ st.set_page_config(
 
 mno = st.text_input("Provider: ")
 
-
 st.write("Provider: " + mno)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.text_input("Billing Month: ")
+
+with col2:
+    st.text_input("Billing Year: ")
 
 
 def update():

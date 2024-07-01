@@ -18,18 +18,16 @@ num_to_month = month = {
 }
 
 
-def check_billable_sim_ukj(data):
+def check_billable_sim_ukj(data, month, year):
     # Check for activation
     if data["Status"].lower() == "active":
         data["Billing Status"] = "Billable"
     elif data["Status"].lower() == "inactive" or data["Status"].lower() == "suspended":
         if type(data["Suspension Date (UTC)"]) != pd._libs.tslibs.nattype.NaTType:
             if (
-                datetime.datetime.now().strftime("%m")
-                == pd.to_datetime(data["Suspension Date (UTC)"]).strftime("%m")
+                month == pd.to_datetime(data["Suspension Date (UTC)"]).strftime("%m")
             ) and (
-                datetime.datetime.now().strftime("%Y")
-                == pd.to_datetime(data["Suspension Date (UTC)"]).strftime("%Y")
+                year == pd.to_datetime(data["Suspension Date (UTC)"]).strftime("%Y")
             ):
                 data["Billing Status"] = "Billable"
                 data["Status"] = "Active"
@@ -74,11 +72,15 @@ def change_status(data, iccid, new_value, name, activation_date, customer_id):
     return data
 
 
-def update_template(df_data, df_temp, customer_id, mno):
+def update_template(df_data, df_temp, customer_id, mno, month, year):
     if mno.lower() == "ukj":
-        df_data = df_data.apply(check_billable_sim_ukj, axis=1)
+        df_data = df_data.apply(
+            lambda x: check_billable_sim_ukj(x, month, year), axis=1
+        )
     elif mno.lower() == "onomondo":
-        df_data = df_data.apply(check_billable_sim_ono, axis=1)
+        df_data = df_data.apply(
+            lambda x: check_billable_sim_ono(x, month, year), axis=1
+        )
     df_data["Subscriber ID #"] = df_data["Subscriber ID #"].apply(
         lambda data: re.sub("'", "", f"{data}")
     )
