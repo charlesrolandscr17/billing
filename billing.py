@@ -66,6 +66,7 @@ def change_status(data, iccid, new_value, name, activation_date, customer_id):
         data["Data"] = name
         data["Activation Date"] = activation_date
         data["Customer ID"] = customer_id
+        data["ICCID"] = f"'{iccid}"
     return data
 
 
@@ -98,7 +99,7 @@ def update_template(df_data, df_temp, customer_id, mno, month, year):
                     axis=1,
                 )
             else:
-                row["ICCID"] = data["Subscriber ID #"]
+                row["ICCID"] = f'\'{data["Subscriber ID #"]}'
                 row["Data"] = data["Name"]
                 row["Status"] = data["Status"].capitalize()
                 row["Customer ID"] = customer_id
