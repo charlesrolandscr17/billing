@@ -41,16 +41,13 @@ def check_billable_sim_ukj(data, month, year):
     return data
 
 
-def check_billable_sim_ono(data):
+def check_billable_sim_ono(data, month, year):
     # Check for activation
     if data["Status"].lower() == "active":
         data["Billing Status"] = "Billable"
     elif data["Status"].lower() == "inactive" or data["Status"].lower() == "suspended":
         if type(data["Suspension Date (UTC)"]) != pd._libs.tslibs.nattype.NaTType:
-            if (
-                num_to_month[datetime.datetime.now().strftime("%m")]
-                == data["Suspension Date (UTC)"]
-            ):
+            if month == data["Suspension Date (UTC)"]:
                 data["Billing Status"] = "Billable"
                 data["Status"] = "Active"
             else:
