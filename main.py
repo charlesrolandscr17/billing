@@ -16,21 +16,31 @@ st.write("Provider: " + mno)
 col1, col2 = st.columns(2)
 
 with col1:
-    st.text_input("Billing Month: ")
+    month = st.text_input("Billing Month: ")
 
 with col2:
-    st.text_input("Billing Year: ")
+    year = st.text_input("Billing Year: ")
 
 
 def update():
     try:
         st.session_state.summary = {}
         st.session_state.new_template, st.session_state.new_tech = update_template(
-            st.session_state.df_tech, st.session_state.df_template, customer_id, mno
+            st.session_state.df_tech,
+            st.session_state.df_template,
+            customer_id,
+            mno,
+            year=year,
+            month=month,
         )
 
         st.session_state.df_template, st.session_state.df_tech = update_template(
-            st.session_state.df_tech, st.session_state.df_template, customer_id, mno
+            st.session_state.df_tech,
+            st.session_state.df_template,
+            customer_id,
+            mno,
+            year=year,
+            month=month,
         )
         st.session_state.bill = True
     # except KeyError:
