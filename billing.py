@@ -2,7 +2,7 @@ import pandas as pd
 import datetime
 import re
 
-num_to_month = month = {
+num_to_month = {
     "01": "Janauary",
     "02": "February",
     "03": "March",
@@ -42,6 +42,7 @@ def check_billable_sim_ukj(data, month, year):
 
 
 def check_billable_sim_ono(data, month, year):
+    month = num_to_month[month]
     # Check for activation
     if data["Status"].lower() == "active":
         data["Billing Status"] = "Billable"
